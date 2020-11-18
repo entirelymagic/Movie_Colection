@@ -13,6 +13,7 @@ Your Choice: """
 
 
 def menu():
+    """The menu of the application"""
     database.create_book_table()
     user_input = input(USER_CHOICE)
     while user_input != 'q':
@@ -32,6 +33,10 @@ def menu():
 
 
 def find_book():
+    """
+        Find a book by author or name of the book.
+        Currently must provide the exact notations.
+    """
     
     def look_after_name_or_author(expected, finder):
         found = []
@@ -50,13 +55,18 @@ def find_book():
 
 
 def prompt_add_book():
+    """
+        Get the name and the other of the book by input and add it to the database
+    """
     name = input('Enter the new book name: ')
     author = input("Enter the new book author: ")
 
     database.add_book(name, author)
 
 def print_book_list(books):
-    
+    """
+        A function that get a book list object and print it each book
+    """
     try:
         print("""\n     Your list if books: """)
         for book in books:
@@ -68,6 +78,9 @@ def print_book_list(books):
 
         
 def list_books():
+    """
+        List the books from the database using the print_book_list function.
+    """
     books = database.get_all_books()
 
     
@@ -75,15 +88,27 @@ def list_books():
 
 
 def prompt_read_book():
+    """
+        Get from an input the name of the book you would like to set as read and
+        modify the database.    
+    """
     name = input('Enter the name of the book you finished reading: ')
 
     database.mark_book_as_read(name)
 
 
 def prompt_delete_book():
+    """
+        Take the name of the book as input and delete it from the database. 
+    """
     name = input("Enter then name of the book you would like to delete: ")
-
-    database.delete_book(name)
+    check_again = input(
+        f"Are you sure you would like to delete {name} book? \n \
+        Type yes if you really want to delete the book: ")
+    if check_again == 'yes':
+        database.delete_book(name)
+    else:
+        print("The book was not deleted.")
 
 if __name__ == "__main__":
     menu()
