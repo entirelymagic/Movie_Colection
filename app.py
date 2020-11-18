@@ -31,14 +31,22 @@ def menu():
         user_input = input(USER_CHOICE)
 
 
-def find_book(finder):
-    books = database.get_all_books()
-    for book in books:
-        print(finder(book))
+def find_book():
+    
+    def look_after_name_or_author(expected, finder):
+        found = []
+        books = database.get_all_books()
+        
+        for book in books:
+            if finder(book) == expected:
+                found.append(book)
+
+        return found
 
     find_by = input("What property are you seraching by? name or author: ")
-    looking_for = input(("what are you looking for? "))
-    find_book(lambda book: book[find_by])
+    looking_for = input("what are you looking for? ")
+    books = look_after_name_or_author(looking_for, lambda book: book[find_by])
+    return print_book_list(books)
 
 
 def prompt_add_book():
@@ -47,17 +55,23 @@ def prompt_add_book():
 
     database.add_book(name, author)
 
-
-def list_books():
-    books = database.get_all_books()
-
-    print("""\n     Your list if books: """)
+def print_book_list(books):
+    
     try:
+        print("""\n     Your list if books: """)
         for book in books:
             read = 'Yes' if book['read'] else 'No'
+            
             print(f"{book['name']} by {book['author']}, read: {read}")
     except TypeError:
         print('Your list of books is empty!')
+
+        
+def list_books():
+    books = database.get_all_books()
+
+    
+    print_book_list(books)
 
 
 def prompt_read_book():
