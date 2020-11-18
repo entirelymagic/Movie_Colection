@@ -1,6 +1,6 @@
+from typing import List, Dict, Union
 from utils.database_connections.database_con import DatabaseConnection
 
-from typing import List, Dict, Union
 """
 Concerned with storing and retrieving books from a json file
 """
