@@ -1,70 +1,75 @@
-"""
-User Story:
-    - Add new movies to keep track of the movies
-    - list all movies in the collection to be able to see them
-    - find a movie by using movie title
+from utils import database
 
-    1. Decide where to store movies
-    2. What data we need to store for each movie
-    3. show the user menu for an options
-    4. each requirement turn as a separate function
-    5. Stop running the program when they type Q
-"""
+USER_CHOICE = """
+Enter:
+- 'a' to add a new book
+- 'l' to list all books
+- 'f' to find a book
+- 'r' to mark book as read
+- 'd' to delete a book
+- 'q' to quit
 
-MENU_PROMPT = "\n Enter 'a' to add a movie, 'l' to see your movies, 'f' to find a movie by title or 'q' to quit: "
-movies = []
-
-
-def add_movie():
-    title = input("Enter movie title: ")
-    director = input("Enter director name: ")
-    year = input("Enter the movie release year: ")
-
-    movies.append({
-        'title': title,
-        'director': director,
-        'year': year
-    })
-
-
-def print_movie(movie):
-    print(f"{movie['title'].title()} by {movie['director'].title()}, produced in {movie['year']}")
-
-
-def list_movies():
-    for movie in movies:
-        print_movie(movie)
-
-
-def find_movie():
-    user_input = input("Enter the movie title: ")
-
-    for movie in movies:
-        if user_input.lower() == movie['title'].lower():
-            print("We found the movie:")
-            print_movie(movie)
-        else:
-            print(f"{user_input} has not been found in the list of movies.")
-
-
-user_options = {
-    "a": add_movie,
-    'l': list_movies,
-    'f': find_movie
-}
+Your Choice: """
 
 
 def menu():
-    selection = input(MENU_PROMPT)
-    while selection != 'q':
-        if selection in user_options:
-            user_options[selection]()
-            # selected_function = user_options[selection]
-            # selected_function()
+    database.create_book_table()
+    user_input = input(USER_CHOICE)
+    while user_input != 'q':
+        if user_input == 'a':
+            prompt_add_book()
+        elif user_input == 'l':
+            list_books()
+        elif user_input == 'f':
+            find_book()
+        elif user_input == 'r':
+            prompt_read_book()
+        elif user_input == 'd':
+            prompt_delete_book()
         else:
-            print("Unknown command, please try again.")
+            print("Unknown command. Please try again")
+        user_input = input(USER_CHOICE)
 
-        selection = input(MENU_PROMPT)
+
+def find_book(finder):
+    books = database.get_all_books()
+    for book in books:
+        print(finder(book))
+
+    find_by = input("What property are you seraching by? name or author: ")
+    looking_for = input(("what are you looking for? "))
+    find_book(lambda book: book[find_by])
 
 
-menu()
+def prompt_add_book():
+    name = input('Enter the new book name: ')
+    author = input("Enter the new book author: ")
+
+    database.add_book(name, author)
+
+
+def list_books():
+    books = database.get_all_books()
+
+    print("""\n     Your list if books: """)
+    try:
+        for book in books:
+            read = 'Yes' if book['read'] else 'No'
+            print(f"{book['name']} by {book['author']}, read: {read}")
+    except TypeError:
+        print('Your list of books is empty!')
+
+
+def prompt_read_book():
+    name = input('Enter the name of the book you finished reading: ')
+
+    database.mark_book_as_read(name)
+
+
+def prompt_delete_book():
+    name = input("Enter then name of the book you would like to delete: ")
+
+    database.delete_book(name)
+
+if __name__ == "__main__":
+    menu()
